@@ -1,0 +1,33 @@
+CREATE OR REPLACE TABLE `iconic-era-471813-m6.Laboratoria.Base_consolidada` AS
+SELECT
+  t1.track_id,
+  t1.track_name_cleaned,
+  t1.artist_name_cleaned,
+  t1.artist_count,
+  t1.released_year,
+  t1.released_month,
+  t1.released_day,
+  t1.release_date,
+  t1.in_spotify_playlists,
+  t1.in_spotify_charts,
+  t1.streams_cleaned,
+  t2.in_apple_playlists,
+  t2.in_apple_charts,
+  t2.in_deezer_playlists,
+  t2.in_deezer_charts,
+  t2.in_shazam_charts_cleaned,
+  t3.bpm,
+  t3.key_cleaned,
+  t3.mode,
+  t3.`danceability_%`,
+  t3.`valence_%`,
+  t3.`energy_%`,
+  t3.`acousticness_%`,
+  t3.`instrumentalness_%`,
+  t3.`liveness_%`,
+  t3.`speechiness_%`
+FROM `iconic-era-471813-m6.Laboratoria.table1` t1
+LEFT JOIN `iconic-era-471813-m6.Laboratoria.table2` t2
+  ON t1.track_id = t2.track_id
+LEFT JOIN `iconic-era-471813-m6.Laboratoria.table3` t3
+  ON t1.track_id = t3.track_id;
