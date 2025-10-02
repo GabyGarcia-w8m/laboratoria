@@ -1,0 +1,51 @@
+-- Parte 1: Limpieza en tabla Desempeño en Spotify
+CREATE OR REPLACE TABLE `iconic-era-471813-m6.Laboratoria.table1` AS
+SELECT
+  track_id,
+  REGEXP_REPLACE(track_name, r"[^a-zA-Z0-9\s?!&(),.'\-]", '') AS track_name_cleaned,
+  REGEXP_REPLACE(artist_name, r"[^a-zA-Z0-9\s?!&(),.'\-]", '') AS artist_name_cleaned,
+  artist_count,
+  released_year,
+  released_month,
+  released_day,
+  DATE(released_year, released_month, released_day) AS release_date,
+  in_spotify_playlists,
+  in_spotify_charts,
+  CAST(
+    CASE
+      WHEN REGEXP_CONTAINS(streams, r'^\d+$') THEN streams
+      ELSE '0'
+    END AS INT64) AS streams_cleaned
+FROM (
+  SELECT *,
+    ROW_NUMBER() OVER (PARTITION BY track_name ORDER BY track_id) AS rn
+  FROM `iconic-era-471813-m6.Laboratoria.Desempeño en Spotify`
+) t
+WHERE rn = 1;
+-- Parte 2: Limpieza en tabla Desempeño en plataformas competidoras
+CREATE OR REPLACE TABLE `iconic-era-471813-m6.Laboratoria.table2` AS
+SELECT
+  track_id,
+  `in_apple_playlists`,
+  `in_apple_charts`,
+  `in_deezer_playlists`,
+  `in_deezer_charts`,
+  IFNULL(in_shazam_charts, 0) AS in_shazam_charts_cleaned
+FROM
+  `iconic-era-471813-m6.Laboratoria.Desempeño en plataformas competidoras`;
+-- Parte 3: Limpieza en tabla Características técnicas de las canciones
+CREATE OR REPLACE TABLE `iconic-era-471813-m6.Laboratoria.table3` AS
+SELECT
+  track_id,
+  bpm,
+  IFNULL(`key`, '0') AS key_cleaned,
+  mode,
+  `danceability_%`,
+  `valence_%`,
+  `energy_%`,
+  `acousticness_%`,
+  `instrumentalness_%`,
+  `liveness_%`,
+  `speechiness_%`
+FROM `iconic-era-471813-m6.Laboratoria.Características técnicas de las canciones`
+
